@@ -16,6 +16,8 @@ build:
   merge_build_host: True  # [win]
   number: 1
   noarch: generic
+  # noarch only builds on linux64
+  skip: True # [not linux64]
   rpaths:
     - lib/R/lib/
     - lib/
@@ -25,12 +27,12 @@ requirements:
     - {{ posix }}zip               # [win]
     - cross-r-base {{ r_base }}    # [build_platform != target_platform]
   host:
-    - r-base
+    - r-base {{ r_version }}
     - r-cli
     - r-curl
     - r-xml2
   run:
-    - r-base
+    - r-base {{ r_version }}
     - r-cli
     - r-curl
     - r-xml2
@@ -52,3 +54,19 @@ about:
 extra:
   recipe-maintainers:
     - conda-forge/r
+  skip-lints:
+    # These are needed because of bug: https://github.com/anaconda-distribution/anaconda-linter/issues/197
+    - http_url
+    - invalid_url
+
+    - host_section_needs_exact_pinnings
+    - missing_dev_url
+    - missing_description
+    - missing_documentation
+
+  anaconda-services:
+    ref:  https://anaconda.zendesk.com/agent/tickets/35116
+    reason: "needed for r-devtools"
+    recipe-maintainers:
+      - bkreider
+
